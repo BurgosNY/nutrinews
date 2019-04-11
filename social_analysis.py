@@ -73,36 +73,6 @@ def link_report(url):
     return sorted(posts, key=lambda k: k['interactions'], reverse=True)
 
 
-def crowdtangle_to_airtable(url=None, option=None, fb_api=None):
-    if option == 'posts':
-        print('looking for posts')
-        reposts_table = connect_airtable('posts')
-        social_media_table = connect_airtable('posts_shares')
-        air_id = reposts_table.search('url', url)[0]["id"]
-    else:
-        reposts_table = connect_airtable('reposts')
-        social_media_table = connect_airtable('shares')
-        air_id = reposts_table.search('url', url)[0]["id"]
-
-    fb_data = fb_api.url_stats(url)
-    reposts_table.update_by_field('url', url, fb_data)
-
-    data = link_report(url)
-    for post in data:
-        obj = {"name": post['name'],
-               "avatar": [{"url": post['image']}],
-               "platform": post['platform'],
-               "link": post['link'],
-               "followers": post['subscriberCount'],
-               "verified": post['verified'],
-               "interactions": post['interactions'],
-               "debunk_url": [air_id]}
-        if social_media_table.search('link', post['link']):
-            social_media_table.update_by_field('link', post['link'], obj)
-        else:
-            social_media_table.insert(obj)
-
-
 def parse_tweet_url(tweet_json):
     try:
         url = tweet_json['entities']['urls'][0]['expanded_url']
