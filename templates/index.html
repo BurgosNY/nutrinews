@@ -1,6 +1,55 @@
 <html>
   <head>
-  <link rel="stylesheet" href="nutrinews.css">
+  <style>
+  	body {
+  font-size: small;
+  line-height: 1.4;
+}
+
+
+.performanceFacts {
+  border: 1px solid black;
+  margin: 20px;
+  float: left;
+  width: 280px;
+  padding: 0.5rem;
+  table {
+    border-collapse: collapse;
+  }
+}
+.performanceFactsTitle {
+  font-weight: bold;
+  font-size: 2rem;
+  margin: 0 0 0.25rem 0;
+}
+.performanceFactsHeader {
+  border-bottom: 10px solid black;
+  padding: 0 0 0.25rem 0;
+  margin: 0 0 0.5rem 0;
+  p {
+    margin: 0;
+  }
+}
+table {
+  width: 100%;
+  border-bottom: 10px solid black;
+  tr {
+    font-weight: normal;
+    text-align: left;
+    padding: 0.25rem 0;
+    border-top: 5px solid black;
+    white-space: nowrap;
+  }
+  td {
+    &:last-child {
+      text-align: right;
+    }
+  }
+ 
+
+}
+
+  </style>
   </head>
 <body>
 <section class="performanceFacts">
@@ -16,28 +65,32 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         20 mins
+         {{ time_to_read }} mins
         </td>
       </tr>
- <tr>
+      {% if correction %}}
+ 	  <tr>
         <th colspan="2" style = "padding: 0.25rem 0;white-space: nowrap;text-align:left; border-bottom: 1px solid black;">
           <b>Correction</b>
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         False
+         Yes
         </td>
       </tr>
+      {% endif %}
 
-<tr>
+{% if disclosure %}}
+		<tr>
         <th colspan="2" style = "padding: 0.25rem 0;white-space: nowrap;text-align:left; border-bottom: 1px solid black;">
           <b>Disclosure</b>
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         False
+         Yes
         </td>
       </tr>
+     {% endif %}
 
 
 <tr>
@@ -46,7 +99,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         5
+         {{ charts }}
         </td>
       </tr>
 
@@ -57,7 +110,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         2
+         {{ external_links }}
         </td>
       </tr>
 
@@ -68,7 +121,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         3
+         {{ internal_links }}
         </td>
       </tr>
 
@@ -79,7 +132,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         2
+         {{ documents }}
         </td>
       </tr>
 
@@ -90,7 +143,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         20 mins
+         {{ images }}
         </td>
       </tr>
 
@@ -101,7 +154,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         20 mins
+         {{ original_images }}
         </td>
       </tr>
 <tr>
@@ -110,7 +163,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         0
+         {{ videos }}
         </td>
       </tr>
 <tr>
@@ -119,7 +172,7 @@
 
         </th>
         <td style = " border-bottom: 1px solid black;">
-         1256
+         {{ words }}
         </td>
       </tr>
 
