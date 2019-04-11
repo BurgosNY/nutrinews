@@ -1,0 +1,10 @@
+pymongo
+pandas
+gunicorn
+airtable-python-wrapper
+pendulum
+django-environ
+Flask-PyMongo
+flask
+flask-login
+flask-wtf
