@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
+from social_analysis import link_report
 
 
 def word_counter(soup):
@@ -8,6 +9,35 @@ def word_counter(soup):
     length = words/265
     return {"time_to_read": round(length, 2),
             "words": words}
+
+
+def byline(soup):
+    from pymongo import MongoClient
+    import settings
+    db = MongoClient(settings.MONGODB_URI).get_database()
+    authors = soup.find("p", {"byline"}).find_all("a")
+    if authors:
+        author_names = [x.text for x in authors]
+    bylines = []
+    text = f'This story was written by'
+    for x in author_names:
+        na = db.authors.find_one({"name": x})
+        if na['twitter']:
+            by = na['twitter']
+        else:
+            by = x
+        bylines.append({"name": by, "articles": na['articles']})
+    if len(author_names) == 2:
+        text = f'This story was written by '
+        for x in bylines:
+            text += f'{x["name"]}'
+            if x is not bylines[-1]:
+                text += ' and '
+            else:
+                text += '.'
+    else:
+        text = f'This story was written by {x["name"]}, who has written {x["articles"]} for @texastribune.'
+    return {"byline": text}
 
 
 def href_stats(soup):
@@ -33,7 +63,7 @@ def href_stats(soup):
             "context_links": len(context_links)}
 
 
-def tribune_stats(soup):
+def tribune_stats(soup, url):
     imgs = soup.find_all("figure")
     images = len(imgs)
     original_images = 0
@@ -66,6 +96,12 @@ def tribune_stats(soup):
     # Adds analysis of links:
     info.update(href_stats(soup))
 
+    # Adds byline stats:
+    info.update(byline(soup))
+
+    # Adds social info:
+    info.update(social_data(url))
+
     # Returns everything
     return info
 
@@ -78,7 +114,27 @@ def transparency_finder(soup):
     return info
 
 
+def social_data(url):
+    l = link_report('https://www.texastribune.org/2019/04/11/texas-legislature-property-tax-debate-school-districts/')
+    data = []
+    for x in l:
+        if x['name'] == 'Texas Tribune' or x['platform'] != 'Twitter':
+            continue
+        else:
+            data.append(x['link'].split('/')[3])
+            if len(data) > 4:
+                return data
+    text = 'This story was shared by '
+    for d in data:
+        text += f'@{d}'
+        if d != data[-1]:
+            text += ', '
+    text += ', among others.'
+
+    return {"social_copy": text}
+
+
 def link_check(url):
     soup = bs(requests.get(url).content, "html.parser")
-    data = tribune_stats(soup)
+    data = tribune_stats(soup, url)
     return data
