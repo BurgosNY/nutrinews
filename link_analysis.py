@@ -10,6 +10,29 @@ def word_counter(soup):
             "words": words}
 
 
+def href_stats(soup):
+    body = soup.find("div", {"class": "story_body"}).find_all("p")
+    junk_links = ['https://mediakit.texastribune.org/']
+    story_links = []
+    external_links = []
+    context_links = []
+    for p in body:
+        hs = p.find_all("a")
+        if hs:
+            for x in hs:
+                if 'texastribune' in x['href'] and x['href'] not in junk_links:
+                    if x['href'].startswith('https://www.texastribune.org/directory/'):
+                        context_links.append(x['href'])
+                    else:
+                        story_links.append(x['href'])
+                else:
+                    if x['href'] not in junk_links:
+                        external_links.append(x['href'])
+    return {"story_links": len(story_links),
+            "external_links": len(external_links),
+            "context_links": len(context_links)}
+
+
 def tribune_stats(soup):
     imgs = soup.find_all("figure")
     images = len(imgs)
@@ -39,6 +62,9 @@ def tribune_stats(soup):
 
     # Adds "transparency indicators"
     info.update(transparency_finder(soup))
+
+    # Adds analysis of links:
+    info.update(href_stats(soup))
 
     # Returns everything
     return info
